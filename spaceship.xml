@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<spaceship name="竜炎" author="Alisdair Rankine" xmlns:component="http://www.shonk.co.uk/spacegame/component">
+	<component:core strength="100" age="0">
+		<component:hull strength="100" joinedAt="south" position="west" age="0">
+			<component:ionEngine strength="100" joinedAt="north" position="south" age="0"/>
+			<component:gattlingGun strength="100" joinedAt="south" position="north" age="0"/>
+		</component:hull>
+		<component:hull strength="100" joinedAt="south" position="east" age="0">
+			<component:ionEngine strength="100" joinedAt="north" position="south" age="0"/>
+			<component:gattlingGun strength="100" joinedAt="south" position="north" age="0"/>
+		</component:hull>
+		<component:fissionReactor strength="100" joinedAt="south" position="south" age="0">
+			<component:hull strength="100" joinedAt="north" position="south" age="0">
+				<component:hull strength="100" joinedAt="north" position="south" age="0">
+					<component:fissionReactor strength="100" joinedAt="west" position="east" age="0">
+						<component:ionEngine strength="100" position="south" age="0"/>
+					</component:fissionReactor>
+					<component:fissionReactor strength="100" joinedAt="east" position="west" age="0">
+						<component:ionEngine strength="100" position="south" age="0"/>
+					</component:fissionReactor>
+				</component:hull>
+			</component:hull>
+		</component:fissionReactor>
+	</component:core>
+</spaceship>
+
