@@ -2,7 +2,19 @@
 	<head>
 		<title>Ship Editor</title>
 		<script src="jquery.js"></script>
+		<script src="jquery.notice.js"></script>
+		<link rel="stylesheet" href="jquery.notice.css"/>
 		<style>
+			html {
+				font-family: "verdana", sans;
+				padding:0;
+				margin:0;
+			}
+
+			body {
+				margin-bottom:20px;
+			}
+			
 			table.canvas{
 				border:none;
 				border-spacing:0px;
@@ -15,6 +27,20 @@
 				width:20px;
 				border:none;
 			}
+
+			a{
+				text-decoration:none;
+				color:#00a;
+				font-weight: bold;
+			}
+
+			a.no-module{
+				color:#000;
+			}
+
+			dd {
+				font-size:12px;
+			}
 		</style>
 		<script>
 			$(function(){
@@ -22,64 +48,80 @@
 				//@todo load with xml files:
 				window.modules = {
 					"commandCore": {
-						"name"		:	"Command Core",
-						"color"		:	"pink",
-						"crew"		:	5,
-						"power"		:	0,
-						"health"	:	100,
-						"mass"		:	1 
+						"name"			:	"Command Core",
+						"color"			:	"pink",
+						"crew"			:	5,
+						"power"			:	0,
+						"health"		:	100,
+						"mass"			:	1,
+						"description"	:	"This is the core of your ship. You lose this module, the ship is gone. All modules must connect to the core with hull pieces in order to operate."
 					},
 					"hull": {
-						"name"		:	"Hull",
-						"color"		:	"yellow",
-						"crew"		:	0,
-						"power"		:	0,
-						"health"	:	5,
-						"mass"		:	1 
+						"name"			:	"Hull",
+						"color"			:	"yellow",
+						"crew"			:	0,
+						"power"			:	0,
+						"health"		:	5,
+						"mass"			:	1 ,
+						"description"	:	"A hull piece contains corridors and conduits for connecting modules together. Modules need these to provide power, control and crew access from the command core."
 					},
 					"fissionReactor": {
-						"name"		:	"Nuclear Fission Reactor",
-						"color"		:	"lime",
-						"crew"		:	-1,
-						"power"		:	5,
-						"health"	:	0,
-						"mass"		:	2 
+						"name"			:	"Nuclear Fission Reactor",
+						"color"			:	"lime",
+						"crew"			:	-1,
+						"power"			:	5,
+						"health"		:	0,
+						"mass"			:	2 ,
+						"description"	:	"Through the splitting of heavy isotopes, your ship can gain the power necessary for operations. Can be volatile if shot."
 					},
 					"ionEngine": {
-						"name"		:	"Ion Engine",
-						"color"		:	"turquoise",
-						"crew"		:	-1,
-						"power"		:	-2,
-						"health"	:	0,
-						"mass"		:	1,
-						"force"		:	5	
+						"name"			:	"Ion Engine",
+						"color"			:	"turquoise",
+						"crew"			:	-1,
+						"power"			:	-2,
+						"health"		:	0,
+						"mass"			:	1,
+						"force"			:	5,
+						"description"	:	"The ion engine builds up velocity through charged particles. Acceation depends on the mass of your ship. Heavy ships are difficult to manouvre."
 					},
 					"gattlingGun": {
-						"name"		:	"Gattling Gun",
-						"color"		:	"crimson",
-						"crew"		:	-1,
-						"power"		:	-1,
-						"health"	:	0,
-						"mass"		:	1 
+						"name"			:	"Gattling Gun",
+						"color"			:	"crimson",
+						"crew"			:	-1,
+						"power"			:	-1,
+						"health"		:	0,
+						"mass"			:	1 ,
+						"description"	:	"A high speed revolving barrel gun fires bullets with a digitally controlled rail launcher. With built-in AI-assisted target tracking, this will fire at targets intelligently."
 					},
 					"crewQuarters": {
-						"name"		:	"Crew Quarters",
-						"color"		:	"mistyrose",
-						"crew"		:	2,
-						"power"		:	0,
-						"health"	:	0,
-						"mass"		:	1 
+						"name"			:	"Crew Quarters",
+						"color"			:	"mistyrose",
+						"crew"			:	2,
+						"power"			:	0,
+						"health"		:	0,
+						"mass"			:	1 ,
+						"description"	:	"Each crew quarters houses 2 bunks, and all the facilites required for 2 human lives."
 					}
 				}
 
+				$("#moduleMenu").append("<dl>");
 				for (var m in window.modules){
-					$("#moduleMenu").append('<a class="moduleSelector" data-module="'+m+'" href="#">Select '+window.modules[m].name+'</a><br/>');
+					
+					var menuItem="";
+					if (m!=="commandCore"){
+					menuItem = '<dt><a class="moduleSelector" data-module="'+m+'" href="#">Select '+window.modules[m].name+'</a></dt>'
+						+ '<dd>'+window.modules[m]["description"]+'</dd>';
+					} else {
+					menuItem = '<dt><a class="no-module">'+window.modules[m].name+' (already placed)</a></dt>'
+						+ '<dd>'+window.modules[m]["description"]+'</dd>';
+					}
+					$("#moduleMenu").append(menuItem);
 
 				}
 				
 				
 
-				$("#moduleMenu").append('<br/><a class="moduleSelector" data-action="delete" href="#">Delete Module</a><br/>');
+				$("#moduleMenu").append('</dl><br/><a class="moduleSelector" data-action="delete" href="#">Delete Module</a><br/>');
 				window.editorBack="#00a";
 				window.ship = {
 					"modules" : {
@@ -90,6 +132,7 @@
 				};
 				window.ship.stats.name="New Ship";
 				window.ship.stats.force = 0;
+				delete window.ship.stats.description;
 				delete window.ship.stats["color"];
 				var x=15,y=15;
 				window.selectedModule=window.modules.hull;
@@ -98,10 +141,13 @@
 					table+="<tr>";	
 						for(var j=-Math.floor(x/2);j<=Math.floor(x/2);j++){
 							var bg = window.editorBack;
+							var title="";
+							
 							if (i==0 && j==0){
 								bg = "pink";
+								title= "title=\"Command Core\"";
 							}
-						table+="<td class=\"cell\" style=\"background-color:"+bg+";\" data-y-coord=\""+i+"\" data-x-coord=\""+j+"\"></td>";
+						table+="<td "+title+" class=\"cell\" style=\"background-color:"+bg+";\" data-y-coord=\""+i+"\" data-x-coord=\""+j+"\"></td>";
 					}
 					table+="</tr>";
 				}
@@ -135,7 +181,6 @@
 					(rightM["connectedToCommand"] && ((rightM["name"] == "Hull") || (rightM["name"] == "Command Core"))) ||
 					(aboveM["connectedToCommand"] && ((aboveM["name"] == "Hull") || (aboveM["name"] == "Command Core"))) ||
 					(belowM["connectedToCommand"] && ((belowM["name"] == "Hull") || (belowM["name"] == "Command Core")));
-				console.log(leftM,rightM,aboveM,belowM);	
 				if (!removeModule(x,y,cell)){
 					return false;
 				}
@@ -146,18 +191,19 @@
 				}
 	
 				if (!connectedToCommand){
-					placementError("modules must be connected to command with hulls");
+					placementError("Modules must be connected to command with hulls");
 					return false;
 				}
 	
 				for (var a in module){
-					if (a!="name" && a!="color")
+					if (a!="name" && a!="color" && a!="description" && a!="connectedToCommand")
 					window.ship.stats[a] += module[a];
 				}
 				window.ship.modules[x+","+y] = jQuery.extend({
 					"connectedToCommand": connectedToCommand
 				},module);
 
+				cell.attr("title",module.name);
 				cell.css("backgroundColor",module.color);
 				return true;
 			}
@@ -169,6 +215,7 @@
 				if (window.ship.modules[x+","+y]!==undefined){
 					module = window.ship.modules[x+","+y]	
 					if (module.name=="Command Core"){
+						placementError("You cannot remove the command core.");
 						return false;
 					}
 				} else {
@@ -176,9 +223,11 @@
 				}
 
 				for (var a in module){
-					if (a!="name" && a!="color")
-					window.ship.stats[a] -= module[a];
+					if (a!="name" && a!="color" && a!="description" && a!="connectedToCommand"){
+						window.ship.stats[a] -= module[a];
+					}
 				}
+				cell.removeAttr("title");
 				cell.css("backgroundColor",window.editorBack);
 				delete window.ship.modules[x+","+y]
 				return true;
@@ -188,6 +237,7 @@
 			function drawStats(){
 				var html = "";
 				for (var a in window.ship.stats){
+				
 					var color = "#000";
 					if (window.ship.stats[a]<0){
 						color = "#f00";
@@ -200,6 +250,7 @@
 
 				}
 				var acceleration = window.ship.stats["force"]/ window.ship.stats["mass"];
+				acceleration = acceleration.toFixed(2);
 				html +="<span>Acceleration: "+acceleration+"</span><br/>";
 				$("#shipStats").html(html);
 			}
@@ -211,23 +262,52 @@
 				if(window.ship.modules[x+","+y] !== undefined){
 					module = window.ship.modules[x+","+y];
 				}
-				console.log(x,y,module);
 				return module;
 			}
 
 			function placementError(error){
-				alert(error);
+				jQuery.noticeAdd({"text":error});
 			}
 
 		</script>
 	</head>
 	<body>
-		<div id="editor">
+		<div style="width:100%;height:50px;background-color:#333;position:fixed;top:0;left:0;z-index:1000;">
+			<div style="width:900px;margin:0 auto;">
+				<h1 style="color:#fff;top:-15px;position:relative;">Spaceship Editor</h1>
+			</div>
+		</div>
+		
+		<div style="position:absolute;top:70px;left:170px;" id="editor">
 			
 		</div>
-		<div style="position:fixed;top:50px;left:450px;" id="moduleMenu">
+		<div style="position:absolute;top:55px;left:520px;" id="moduleMenu">
 		</div>
-		<div style="position:fixed;top:222px;left:450px;" id="shipStats">
+		<div style="position:absolute;top:70px;left:5px;" id="shipStats">
+		</div>
+		<div style="top:470px;width:800px;margin:20px auto;position:relative;text-align:justify;padding:20px;">
+			<p> 
+			This is a small experiment to see how fun i could make a spaceship editor.
+			The aim is to improve the good bits, scrap the bad bits and extract something a little
+			more complete.
+			</p>
+			<p>
+			The editor takes a lot of inspiration from other games. I particularly liked the ship creation in the
+			<a href="http://www.captainforever.com">Captain Forever</a>. I also liked the simulation aspect of Introversion's
+			<a href="http://www.introversion.co.uk/prisonarchitect/">Prison architect</a> in which power and water systems must be routed to build a functional prison.
+			My idea is to tie all these together with a game reminiscent of Escape Velocity and Elite, with a fully customizable,
+			upgradeable ship.
+			</p>
+			<p>
+			There are currently only 6 modules that complete all the tasks i would like a spaceship
+			to do in an old school scrolling shooter. I wanted to include more customisation than those tools though.
+			The modules are currently hard coded, but i will eventually leverage a standardised ship description schema
+			of XML (I already have the initial draft).
+			</p>
+			<p>
+			If you have fedback, feel free to contact me <a href="http://www.twitter.com/alisdairrankine">@alisdairrankine</a>.
+			Please bear in mind that this is a prototype, and not meant to be a polished game or tool.
+			</p>
 		</div>
 	</body>
 </html>
