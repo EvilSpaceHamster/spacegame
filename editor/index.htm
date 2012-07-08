@@ -83,7 +83,7 @@
 				window.editorBack="#00a";
 				window.ship = {
 					"modules" : {
-						"0,0" : jQuery.extend({},window.modules["commandCore"]) 
+						"0,0" : jQuery.extend({"connectedToCommand" : true},window.modules["commandCore"]) 
 
 					},
 					"stats" : jQuery.extend({},window.modules["commandCore"])
@@ -109,7 +109,7 @@
 
 				$("#editor").on("mousedown",".cell",function(e){
 					e.preventDefault();
-					if (placeModule(window.selectedModule,$(this).attr("data-x-coord"),$(this).attr("data-y-coord"),$(this))){
+					if (placeModule(window.selectedModule,Number($(this).attr("data-x-coord")),Number($(this).attr("data-y-coord")),$(this))){
 						drawStats();
 					}
 				})
@@ -126,18 +126,38 @@
 
 			function placeModule(module,x,y,cell){
 
-				if(!removeModule(x,y,cell)){
+				var leftM = getModule(x-1,y);
+				var rightM = getModule(x+1,y);
+				var aboveM = getModule(x,y-1);
+				var belowM = getModule(x,y+1);
+				var connectedToCommand = 
+					(leftM["connectedToCommand"] && ((leftM["name"] == "Hull") || (leftM["name"] == "Command Core"))) ||	
+					(rightM["connectedToCommand"] && ((rightM["name"] == "Hull") || (rightM["name"] == "Command Core"))) ||
+					(aboveM["connectedToCommand"] && ((aboveM["name"] == "Hull") || (aboveM["name"] == "Command Core"))) ||
+					(belowM["connectedToCommand"] && ((belowM["name"] == "Hull") || (belowM["name"] == "Command Core")));
+				console.log(leftM,rightM,aboveM,belowM);	
+				if (!removeModule(x,y,cell)){
 					return false;
 				}
-				
+
+
 				if (module=="delete"){
 					return true;
 				}
+	
+				if (!connectedToCommand){
+					placementError("modules must be connected to command with hulls");
+					return false;
+				}
+	
 				for (var a in module){
 					if (a!="name" && a!="color")
 					window.ship.stats[a] += module[a];
 				}
-				window.ship.modules[x+","+y] = jQuery.extend({},module);
+				window.ship.modules[x+","+y] = jQuery.extend({
+					"connectedToCommand": connectedToCommand
+				},module);
+
 				cell.css("backgroundColor",module.color);
 				return true;
 			}
@@ -183,6 +203,22 @@
 				html +="<span>Acceleration: "+acceleration+"</span><br/>";
 				$("#shipStats").html(html);
 			}
+
+			function getModule(x,y){
+				var module = {
+				"connectedToCommand" : false
+				}
+				if(window.ship.modules[x+","+y] !== undefined){
+					module = window.ship.modules[x+","+y];
+				}
+				console.log(x,y,module);
+				return module;
+			}
+
+			function placementError(error){
+				alert(error);
+			}
+
 		</script>
 	</head>
 	<body>
