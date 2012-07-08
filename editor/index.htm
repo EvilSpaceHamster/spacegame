@@ -1,0 +1,198 @@
+<html>
+	<head>
+		<title>Ship Editor</title>
+		<script src="jquery.js"></script>
+		<style>
+			table.canvas{
+				border:none;
+				border-spacing:0px;
+			}
+			table.canvas tr{
+				height:20px;
+				border:none;
+			}
+			table.canvas tr td{
+				width:20px;
+				border:none;
+			}
+		</style>
+		<script>
+			$(function(){
+
+				//@todo load with xml files:
+				window.modules = {
+					"commandCore": {
+						"name"		:	"Command Core",
+						"color"		:	"pink",
+						"crew"		:	5,
+						"power"		:	0,
+						"health"	:	100,
+						"mass"		:	1 
+					},
+					"hull": {
+						"name"		:	"Hull",
+						"color"		:	"yellow",
+						"crew"		:	0,
+						"power"		:	0,
+						"health"	:	5,
+						"mass"		:	1 
+					},
+					"fissionReactor": {
+						"name"		:	"Nuclear Fission Reactor",
+						"color"		:	"lime",
+						"crew"		:	-1,
+						"power"		:	5,
+						"health"	:	0,
+						"mass"		:	2 
+					},
+					"ionEngine": {
+						"name"		:	"Ion Engine",
+						"color"		:	"turquoise",
+						"crew"		:	-1,
+						"power"		:	-2,
+						"health"	:	0,
+						"mass"		:	1,
+						"force"		:	5	
+					},
+					"gattlingGun": {
+						"name"		:	"Gattling Gun",
+						"color"		:	"crimson",
+						"crew"		:	-1,
+						"power"		:	-1,
+						"health"	:	0,
+						"mass"		:	1 
+					},
+					"crewQuarters": {
+						"name"		:	"Crew Quarters",
+						"color"		:	"mistyrose",
+						"crew"		:	2,
+						"power"		:	0,
+						"health"	:	0,
+						"mass"		:	1 
+					}
+				}
+
+				for (var m in window.modules){
+					$("#moduleMenu").append('<a class="moduleSelector" data-module="'+m+'" href="#">Select '+window.modules[m].name+'</a><br/>');
+
+				}
+				
+				
+
+				$("#moduleMenu").append('<br/><a class="moduleSelector" data-action="delete" href="#">Delete Module</a><br/>');
+				window.editorBack="#00a";
+				window.ship = {
+					"modules" : {
+						"0,0" : {
+							"name" : "commandCore"
+						}
+					},
+					"stats" : window.modules["commandCore"] 
+				};
+				window.ship.stats.name="New Ship";
+				window.ship.stats.force = 0;
+				delete window.ship.stats["color"];
+				var x=15,y=15;
+				window.selectedModule=window.modules.hull;
+				var table = "<table class=\"canvas\">";
+				for(var i=-Math.floor(y/2);i<=Math.floor(y/2);i++){
+					table+="<tr>";	
+						for(var j=-Math.floor(x/2);j<=Math.floor(x/2);j++){
+							var bg = window.editorBack;
+							if (i==0 && j==0){
+								bg = "pink";
+							}
+						table+="<td class=\"cell\" style=\"background-color:"+bg+";\" data-y-coord=\""+i+"\" data-x-coord=\""+j+"\"></td>";
+					}
+					table+="</tr>";
+				}
+				$("#editor").append(table);
+
+				$("#editor").on("mousedown",".cell",function(e){
+					e.preventDefault();
+					if (placeModule(window.selectedModule,$(this).attr("data-x-coord"),$(this).attr("data-y-coord"),$(this))){
+						drawStats();
+					}
+				})
+				$(".moduleSelector").on("click",function(e){
+					if ($(this).attr("data-action")=="delete"){
+						window.selectedModule = "delete";
+						return;
+					}
+					window.selectedModule = window.modules[$(this).attr("data-module")];
+				})
+				drawStats();
+			});
+
+
+			function placeModule(module,x,y,cell){
+
+				if(!removeModule(x,y,cell)){
+					return false;
+				}
+				
+				if (module=="delete"){
+					return true;
+				}
+				for (var a in module){
+					if (a!="name" && a!="color")
+					window.ship.stats[a] += module[a];
+				}
+				window.ship.modules[x+","+y] = module;
+				cell.css("backgroundColor",module.color);
+				return true;
+			}
+
+			function removeModule(x,y,cell){
+
+				var module;
+
+				if (window.ship.modules[x+","+y]!==undefined){
+					module = window.ship.modules[x+","+y]	
+					if (module.name="CommandCore"){
+						return false;
+					}
+				} else {
+					return true;
+				}
+
+				for (var a in module){
+					if (a!="name" && a!="color")
+					window.ship.stats[a] -= module[a];
+				}
+				cell.css("backgroundColor",window.editorBack);
+				delete window.ship.modules[x+","+y]
+				return true;
+			
+			}
+
+			function drawStats(){
+				var html = "";
+				for (var a in window.ship.stats){
+					var color = "#000";
+					if (window.ship.stats[a]<0){
+						color = "#f00";
+					}
+					var name = a;
+					if (a=="crew" || a=="power"){
+						name = "surplus "+a;
+					}
+					html +="<span style=\"text-transform:capitalize;color:"+color+";\">"+ name+": "+window.ship.stats[a]+"</span><br/>";
+
+				}
+				var acceleration = window.ship.stats["force"]/ window.ship.stats["mass"];
+				html +="<span>Acceleration: "+acceleration+"</span><br/>";
+				$("#shipStats").html(html);
+			}
+		</script>
+	</head>
+	<body>
+		<div id="editor">
+			
+		</div>
+		<div style="position:fixed;top:50px;left:450px;" id="moduleMenu">
+		</div>
+		<div style="position:fixed;top:222px;left:450px;" id="shipStats">
+		</div>
+	</body>
+</html>
