@@ -83,11 +83,10 @@
 				window.editorBack="#00a";
 				window.ship = {
 					"modules" : {
-						"0,0" : {
-							"name" : "commandCore"
-						}
+						"0,0" : jQuery.extend({},window.modules["commandCore"]) 
+
 					},
-					"stats" : window.modules["commandCore"] 
+					"stats" : jQuery.extend({},window.modules["commandCore"])
 				};
 				window.ship.stats.name="New Ship";
 				window.ship.stats.force = 0;
@@ -138,7 +137,7 @@
 					if (a!="name" && a!="color")
 					window.ship.stats[a] += module[a];
 				}
-				window.ship.modules[x+","+y] = module;
+				window.ship.modules[x+","+y] = jQuery.extend({},module);
 				cell.css("backgroundColor",module.color);
 				return true;
 			}
@@ -149,7 +148,7 @@
 
 				if (window.ship.modules[x+","+y]!==undefined){
 					module = window.ship.modules[x+","+y]	
-					if (module.name="CommandCore"){
+					if (module.name=="Command Core"){
 						return false;
 					}
 				} else {
