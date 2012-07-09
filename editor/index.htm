@@ -20,14 +20,81 @@
 				border-spacing:0px;
 			}
 			table.canvas tr{
-				height:20px;
+				height:32px;
 				border:none;
 			}
 			table.canvas tr td{
-				width:20px;
+				width:32px;
 				border:none;
+				padding:0;
 			}
 
+			.Hull{
+				background-image: url("shiphull.png");
+			}
+			.NuclearFissionReactor{
+				background-image: url("shipreactor.png");
+			}
+			.IonEngine{
+				background-image: url("shipengine.png");
+			}
+			.CommandCore{
+				background-image: url("shipcore.png");
+			}
+			.CrewQuarters{
+				background-image: url("shipbunks.png");
+			}
+
+			.cell {
+				background-position:-160px 0px;
+			}
+
+			.cell.d{
+				background-position:-256px 0px;
+			}
+			.cell.l{
+				background-position:-288px 0px;
+			}
+			.cell.r{
+				background-position:-320px 0px;
+			}
+			.cell.u{
+				background-position:-352px 0px;
+			}	
+			.cell.l.r{
+				background-position:0px 0px;
+			}
+			.cell.l.u{
+				background-position:-32px 0px;
+			}
+			.cell.r.u{
+				background-position:-64px 0px;
+			}
+			.cell.u.d{
+				background-position:-96px 0px;
+			}
+			.cell.l.d{
+				background-position:-192px 0px;
+			}
+			.cell.r.d{
+				background-position:-224px 0px;
+			}
+			.cell.u.l.r{
+				background-position:-128px 0px;
+			}
+			.cell.l.d.r{
+				background-position:-384px 0px;
+			}
+			.cell.u.d.r{
+				background-position:-416px 0px;
+			}
+			.cell.u.l.d{
+				background-position:-448px 0px;
+			}
+			.cell.l.u.r.d{
+				background-position:-160px 0px;
+			}
+			
 			a{
 				text-decoration:none;
 				color:#00a;
@@ -205,6 +272,7 @@
 
 				cell.attr("title",module.name);
 				cell.css("backgroundColor",module.color);
+				reinitHullGraphics();
 				return true;
 			}
 
@@ -264,6 +332,39 @@
 				}
 				return module;
 			}
+			
+			function reinitHullGraphics(){
+				for(i in window.ship.modules){
+					var module = window.ship.modules[i];
+					var coords = i.split(",");
+					var x=Number(coords[0]),y=Number(coords[1]);
+					var leftM = getModule(x-1,y);
+					var rightM = getModule(x+1,y);
+					var aboveM = getModule(x,y-1);
+					var belowM = getModule(x,y+1);
+				
+					var cell = $('.cell[data-x-coord="'+x+'"][data-y-coord="'+y+'"]');
+				
+					cell.removeClass();
+					cell.addClass(module.name.replace(/\s/g,""))
+					.addClass("cell");
+					if (leftM.name!==undefined){
+						cell.addClass("l");
+					}
+					if (rightM.name!==undefined){
+						cell.addClass("r");
+					}
+					if (aboveM.name!==undefined){
+						cell.addClass("u");
+					}
+					if (belowM.name!==undefined){
+						cell.addClass("d");
+					}
+
+
+
+				}
+			}
 
 			function placementError(error){
 				jQuery.noticeAdd({"text":error});
@@ -281,7 +382,7 @@
 		<div style="position:absolute;top:70px;left:170px;" id="editor">
 			
 		</div>
-		<div style="position:absolute;top:55px;left:520px;width:350px;" id="moduleMenu">
+		<div style="position:absolute;top:70px;left:720px;" id="moduleMenu">
 		</div>
 		<div style="position:absolute;top:70px;left:5px;" id="shipStats">
 		</div>
