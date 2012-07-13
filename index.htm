@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>StarCharm</title>
+		<title>Forbidden Sector</title>
 		<style>
 			html{
 				font-family: "arial";
@@ -21,12 +21,14 @@
 				background-image: -ms-linear-gradient(bottom, rgb(0,0,0) 7%, rgb(56,56,56) 100%);
 			}
 
-			#mainHeader h1 {
-				text-transform: uppercase;
+			#mainHeader #headerContent{
 				color:#fff;
 				width:800px;
 				margin:auto;
-				padding:10px 0px;
+			}
+
+			#mainHeader #headerContent h1 {
+				text-transform: uppercase;
 			}
 			
 			#mainBody {
@@ -46,17 +48,27 @@
 				padding-bottom:0px;
 			}
 
-			#mainBody a{
+			a{
 				color:#fd0;
 				text-decoration: none;
+			}
+
+			#mainFooter {
+				text-align:center;
+				font-size:10px;
 			}
 
 		</style>
 	</head>
 	<body>
 		<div id="mainHeader">
-			<h1><span style="color:#c06020;">Forbidden</span>Sector</h1>
+			<div id="headerContent">
+
+				<h1><span style="color:#c06020;">Forbidden</span>Sector</h1>
+				<span style="font-size:12px;top:-60px;font-weight:bold;left:15px;position:relative;line-height:0px;">Alisdair Rankine's</span>
+			</div>
 		</div>
+		<a href="https://github.com/evilspacehamster/spacegame"><img style="position: fixed; top: 0; right: 0; border: 0;z-index:1001;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub"></a>	
 		<div id="mainBody">
 			<h2>Humanity has changed</h2>
 			
@@ -162,6 +174,10 @@
 			That transmission changed the landscape of the universe. Find out
 			what happened.
 			</p>
+		</div>
+		<div id="mainFooter">
+			<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons Licence" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/80x15.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" property="dct:title" rel="dct:type">Forbidden Sector</span> is licensed <br/>under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
+			<p>&copy; Alisdair Rankine 2012</p>
 		</div>
 	</body>
 </html>
